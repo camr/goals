@@ -17,7 +17,10 @@
       <div slot="header">Settings</div>
       <ui-textbox label="Start Date" name="start"
                   type="text" placeholder="YYYY-MM-DD"
-                  :validation-rules="date"
+                  icon="calendar" icon-right
+                  help-text="The starting date for listing goals"
+                  validation-rules="required|regex:/\d{4}-\d{2}-\d{2}/"
+                  validate-on-blur
                   :value.sync="startEntry"
                   @changed="startChanged">
       </ui-textbox>
@@ -40,12 +43,6 @@
           {
             id: 'settings',
             text: 'Settings'
-          }, {
-            id: 'about',
-            text: 'About'
-          }, {
-            id: 'help',
-            text: 'Help'
           }
         ]
       }
@@ -63,7 +60,19 @@
       },
 
       startChanged () {
-        console.log(new Date(this.startEntry))
+        try {
+          let res = /(\d{4})-(\d{2})-(\d{2})/.exec(this.startEntry)
+          if (res.length !== 4) {
+            console.error('Date format doesn\'t match')
+            return
+          }
+
+          let d = Date.UTC(res[1], parseInt(res[2], 10) - 1, res[3])
+          this.start = new Date(d)
+          console.log(this.start)
+        } catch (err) {
+          console.error(err)
+        }
       }
     }
   }
